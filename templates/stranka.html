@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block titulek %}{{ stranka.titulek }} — E-shop{% endblock %}
+
+{% block obsah %}
+<article class="staticka-stranka">
+    <h1>{{ stranka.titulek }}</h1>
+
+    {% for nadpis, text in stranka.sekce %}
+    <section class="stranka-sekce">
+        <h2>{{ nadpis }}</h2>
+        <p>{{ text }}</p>
+    </section>
+    {% endfor %}
+</article>
+{% endblock %}

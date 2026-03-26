@@ -1,0 +1,51 @@
+{% extends 'admin/zaklad.html' %}
+{% block titulek %}Přehled{% endblock %}
+
+{% block obsah %}
+<h1 class="admin-nadpis">Přehled</h1>
+
+<div class="mrizka-statistik">
+    <div class="statistika-karta">
+        <div class="cislo">{{ pocet_produktu }}</div>
+        <div class="popis">Produktů celkem</div>
+    </div>
+    <div class="statistika-karta">
+        <div class="cislo">{{ pocet_objednavek }}</div>
+        <div class="popis">Objednávek celkem</div>
+    </div>
+    <div class="statistika-karta">
+        <div class="cislo">{{ pocet_novych }}</div>
+        <div class="popis">Nových objednávek</div>
+    </div>
+</div>
+
+<div class="admin-karta">
+    <h2 style="margin:0 0 1rem;font-size:1.1rem">Poslední objednávky</h2>
+    {% if posledni_objednavky %}
+        <table class="admin-tabulka">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Zákazník</th>
+                    <th>Celkem</th>
+                    <th>Stav</th>
+                    <th>Datum</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in posledni_objednavky %}
+                <tr>
+                    <td>{{ obj['id'] }}</td>
+                    <td>{{ obj['jmeno_zakaznika'] }}</td>
+                    <td>{{ obj['celkem'] | round(2) }} Kč</td>
+                    <td><span class="odznak odznak-{{ obj['stav'] }}">{{ obj['stav'] }}</span></td>
+                    <td>{{ obj['vytvoreno'][:10] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color:#888">Zatím žádné objednávky.</p>
+    {% endif %}
+</div>
+{% endblock %}

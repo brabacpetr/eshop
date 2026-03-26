@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Produkty — E-shop{% endblock %}
+
+{% block obsah %}
+<nav class="drobecky">
+    <a href="{{ url_for('index') }}">Domů</a> &rsaquo; Produkty
+</nav>
+
+<div class="produkty-stranka">
+    <aside class="kategorie-filtr">
+        <h3>Kategorie</h3>
+        <ul>
+            <li>
+                <a href="{{ url_for('produkty') }}" {% if not aktivni_kategorie_id %}class="aktivni"{% endif %}>
+                    Všechny
+                </a>
+            </li>
+            {% for kat in kategorie %}
+            <li>
+                <a href="{{ url_for('produkty', kategorie=kat['id']) }}"
+                   {% if aktivni_kategorie_id == kat['id'] %}class="aktivni"{% endif %}>
+                    {{ kat['nazev'] }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <div class="produkty-obsah">
+        <p class="pocet-produktu">Zobrazeno {{ produkty|length }} produktů</p>
+
+        {% if produkty %}
+        <div class="produkty-grid">
+            {% for produkt in produkty %}
+            <div class="produkt-karta">
+                <div class="produkt-obrazek">
+                    {% if produkt['obrazek'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + produkt['obrazek']) }}" alt="{{ produkt['nazev'] }}">
+                    {% else %}
+                    <div class="produkt-obrazek-placeholder">Bez obrázku</div>
+                    {% endif %}
+                </div>
+                <div class="produkt-info">
+                    <h3>{{ produkt['nazev'] }}</h3>
+                    {% if produkt['kategorie_nazev'] %}
+                    <p class="produkt-kategorie">{{ produkt['kategorie_nazev'] }}</p>
+                    {% endif %}
+                    <p class="produkt-cena">{{ "%.2f"|format(produkt['cena']) }} Kč</p>
+                    <a href="{{ url_for('detail_produktu', produkt_id=produkt['id']) }}" class="tlacitko">Zobrazit</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="prazdny-stav">Žádné produkty v této kategorii.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

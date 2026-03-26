@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Domovská stránka — E-shop{% endblock %}
+
+{% block obsah %}
+<div class="domovska-stranka">
+    <h1>Vítejte v našem e-shopu</h1>
+
+    <section class="doporucene-produkty">
+        <h2>Doporučené produkty</h2>
+
+        {% if doporucene %}
+        <div class="produkty-grid">
+            {% for produkt in doporucene %}
+            <div class="produkt-karta">
+                <div class="produkt-obrazek">
+                    {% if produkt['obrazek'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + produkt['obrazek']) }}" alt="{{ produkt['nazev'] }}">
+                    {% else %}
+                    <div class="produkt-obrazek-placeholder">Bez obrázku</div>
+                    {% endif %}
+                </div>
+                <div class="produkt-info">
+                    <h3>{{ produkt['nazev'] }}</h3>
+                    {% if produkt['kategorie_nazev'] %}
+                    <p class="produkt-kategorie">{{ produkt['kategorie_nazev'] }}</p>
+                    {% endif %}
+                    <p class="produkt-cena">{{ "%.2f"|format(produkt['cena']) }} Kč</p>
+                    <a href="{{ url_for('detail_produktu', produkt_id=produkt['id']) }}" class="tlacitko">Zobrazit</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="prazdny-stav">Momentálně nejsou žádné doporučené produkty. <a href="{{ url_for('produkty') }}">Zobrazit všechny produkty</a>.</p>
+        {% endif %}
+    </section>
+
+    <div class="vsechny-produkty-odkaz">
+        <a href="{{ url_for('produkty') }}" class="tlacitko">Zobrazit všechny produkty</a>
+    </div>
+</div>
+{% endblock %}

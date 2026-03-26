@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Přihlášení administrátora — MůjShop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body { background: #f4f6fb; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .prihlaseni-karta { background: #fff; border-radius: 10px; padding: 2.5rem 2rem; box-shadow: 0 2px 16px rgba(0,0,0,.1); width: 100%; max-width: 360px; }
+        .prihlaseni-karta h1 { margin: 0 0 1.5rem; font-size: 1.4rem; color: #1e2330; }
+        .prihlaseni-karta label { display: block; font-size: .88rem; font-weight: 600; margin-bottom: .35rem; color: #333; }
+        .prihlaseni-karta input[type="password"] { width: 100%; padding: .6rem .8rem; border: 1px solid #ced4da; border-radius: 5px; font-size: 1rem; box-sizing: border-box; margin-bottom: 1rem; }
+        .prihlaseni-karta button { width: 100%; padding: .65rem; background: #3b5bdb; color: #fff; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; }
+        .prihlaseni-karta button:hover { background: #2f4bbf; }
+    </style>
+</head>
+<body>
+    <div class="prihlaseni-karta">
+        <h1>Administrace</h1>
+        {% with zpravy = get_flashed_messages(with_categories=True) %}
+            {% if zpravy %}
+                {% for kategorie, zprava in zpravy %}
+                    <div class="zprava zprava-{{ kategorie }}" style="margin-bottom:.75rem">{{ zprava }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="post">
+            <label for="heslo">Heslo</label>
+            <input type="password" id="heslo" name="heslo" autofocus required>
+            <button type="submit">Přihlásit se</button>
+        </form>
+    </div>
+</body>
+</html>

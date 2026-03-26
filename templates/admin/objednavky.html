@@ -1,0 +1,60 @@
+{% extends 'admin/zaklad.html' %}
+{% block titulek %}Objednávky{% endblock %}
+{% block obsah %}
+<h1 class="admin-nadpis">Objednávky</h1>
+
+<div class="admin-karta" style="padding:.75rem 1.5rem">
+    <strong>Filtrovat podle stavu:</strong>
+    <a href="{{ url_for('admin_objednavky') }}"
+       class="tlacitko tlacitko-sekundarni" style="margin-left:.5rem{% if not filtr_stav %};outline:2px solid #3b5bdb{% endif %}">Vše</a>
+    {% for stav in platne_stavy %}
+    <a href="{{ url_for('admin_objednavky', stav=stav) }}"
+       class="tlacitko tlacitko-sekundarni" style="margin-left:.25rem{% if filtr_stav == stav %};outline:2px solid #3b5bdb{% endif %}">
+        {{ stav|capitalize }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="admin-karta" style="padding:0">
+    <table class="admin-tabulka">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Zákazník</th>
+                <th>Datum</th>
+                <th>Doprava</th>
+                <th>Platba</th>
+                <th>Stav</th>
+                <th>Celkem</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for obj in objednavky %}
+            <tr>
+                <td>{{ obj.id }}</td>
+                <td>{{ obj.jmeno_zakaznika }}</td>
+                <td>{{ obj.vytvoreno[:16] }}</td>
+                <td>{% if obj.doprava == 'posta' %}Česká pošta{% else %}DPD{% endif %}</td>
+                <td>{% if obj.platba == 'prevod' %}Převodem{% else %}Dobírka{% endif %}</td>
+                <td>
+                    {% if obj.stav == 'nova' %}<span class="odznak odznak-nova">Nová</span>
+                    {% elif obj.stav == 'zaplacena' %}<span class="odznak odznak-zaplacena">Zaplacená</span>
+                    {% elif obj.stav == 'odeslana' %}<span class="odznak odznak-odeslana">Odeslaná</span>
+                    {% elif obj.stav == 'dokoncena' %}<span class="odznak odznak-dokoncena">Dokončená</span>
+                    {% elif obj.stav == 'zrusena' %}<span class="odznak odznak-zrusena">Zrušená</span>
+                    {% endif %}
+                </td>
+                <td>{{ "%.2f"|format(obj.celkem) }} Kč</td>
+                <td>
+                    <a href="{{ url_for('admin_detail_objednavky', objednavka_id=obj.id) }}"
+                       class="tlacitko tlacitko-sekundarni">Detail</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="8" style="text-align:center;color:#888;padding:2rem">Žádné objednávky.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

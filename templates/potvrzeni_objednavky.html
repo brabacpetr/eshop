@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Objednávka #{{ objednavka['id'] }} potvrzena — E-shop{% endblock %}
+
+{% block obsah %}
+<div class="potvrzeni-hlavicka">
+    <div class="potvrzeni-ikona">&#10003;</div>
+    <h1>Děkujeme za vaši objednávku!</h1>
+    <p class="potvrzeni-podtitulek">Objednávka <strong>#{{ objednavka['id'] }}</strong> byla přijata.</p>
+</div>
+
+<div class="potvrzeni-rozlozeni">
+
+    <section class="potvrzeni-sekce">
+        <h2>Přehled objednávky</h2>
+        <table class="souhrn-tabulka">
+            <thead>
+                <tr>
+                    <th>Produkt</th>
+                    <th>Cena</th>
+                    <th>Množství</th>
+                    <th>Celkem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for polozka in polozky %}
+                <tr>
+                    <td>{{ polozka['nazev_produktu'] }}</td>
+                    <td>{{ "%.2f"|format(polozka['cena_produktu']) }} Kč</td>
+                    <td>{{ polozka['mnozstvi'] }}</td>
+                    <td>{{ "%.2f"|format(polozka['cena_produktu'] * polozka['mnozstvi']) }} Kč</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="potvrzeni-ceny">
+            <div class="souhrn-radek">
+                <span>Mezisoučet:</span>
+                <span>{{ "%.2f"|format(objednavka['mezisoucet']) }} Kč</span>
+            </div>
+            <div class="souhrn-radek">
+                <span>Doprava
+                    ({% if objednavka['doprava'] == 'posta' %}Česká pošta{% else %}DPD{% endif %}):
+                </span>
+                <span>{{ cena_dopravy[objednavka['doprava']]|int }} Kč</span>
+            </div>
+            {% if objednavka['platba'] == 'dobirka' %}
+            <div class="souhrn-radek">
+                <span>Dobírka:</span>
+                <span>+30 Kč</span>
+            </div>
+            {% endif %}
+            {% if objednavka['sleva'] > 0 %}
+            <div class="souhrn-radek souhrn-sleva">
+                <span>Sleva{% if kupon %} (kupón {{ kupon['kod'] }}){% endif %}:</span>
+                <span>−{{ "%.2f"|format(objednavka['sleva']) }} Kč</span>
+            </div>
+            {% endif %}
+            <div class="souhrn-radek souhrn-celkem">
+                <span>Celkem k úhradě:</span>
+                <span>{{ "%.2f"|format(objednavka['celkem']) }} Kč</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="potvrzeni-vedlejsi">
+
+        <section class="potvrzeni-sekce">
+            <h2>Doručovací údaje</h2>
+            <p>{{ objednavka['jmeno_zakaznika'] }}<br>
+               {{ objednavka['ulice'] }}<br>
+               {{ objednavka['psc'] }} {{ objednavka['mesto'] }}</p>
+            <p>E-mail: {{ objednavka['email_zakaznika'] }}<br>
+               {% if objednavka['telefon_zakaznika'] %}
+               Telefon: {{ objednavka['telefon_zakaznika'] }}
+               {% endif %}
+            </p>
+        </section>
+
+        {% if objednavka['platba'] == 'prevod' %}
+        <section class="potvrzeni-sekce platebni-instrukce">
+            <h2>Platební instrukce</h2>
+            <p>Prosím uhraďte objednávku bankovním převodem na níže uvedené údaje:</p>
+            <table class="instrukce-tabulka">
+                <tr>
+                    <th>IBAN:</th>
+                    <td><strong>CZ65 0800 0000 1920 0014 5399</strong></td>
+                </tr>
+                <tr>
+                    <th>Variabilní symbol:</th>
+                    <td><strong>{{ objednavka['id'] }}</strong></td>
+                </tr>
+                <tr>
+                    <th>Částka:</th>
+                    <td><strong>{{ "%.2f"|format(objednavka['celkem']) }} Kč</strong></td>
+                </tr>
+            </table>
+            <p class="instrukce-poznamka">&#9432; Prosím uhraďte do 5 pracovních dní od objednávky.</p>
+        </section>
+        {% else %}
+        <section class="potvrzeni-sekce">
+            <h2>Způsob platby</h2>
+            <p>&#128666; Platíte při převzetí zásilky — <strong>{{ "%.2f"|format(objednavka['celkem']) }} Kč</strong>.</p>
+        </section>
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="potvrzeni-akce">
+    <a href="{{ url_for('produkty') }}" class="tlacitko">Pokračovat v nákupu</a>
+</div>
+
+{% endblock %}

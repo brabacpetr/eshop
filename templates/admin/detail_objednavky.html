@@ -1,0 +1,116 @@
+{% extends 'admin/zaklad.html' %}
+{% block titulek %}Objednávka #{{ objednavka.id }}{% endblock %}
+{% block obsah %}
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+    <h1 class="admin-nadpis" style="margin-bottom:0">Objednávka #{{ objednavka.id }}</h1>
+    {% if objednavka.stav == 'nova' %}<span class="odznak odznak-nova">Nová</span>
+    {% elif objednavka.stav == 'zaplacena' %}<span class="odznak odznak-zaplacena">Zaplacená</span>
+    {% elif objednavka.stav == 'odeslana' %}<span class="odznak odznak-odeslana">Odeslaná</span>
+    {% elif objednavka.stav == 'dokoncena' %}<span class="odznak odznak-dokoncena">Dokončená</span>
+    {% elif objednavka.stav == 'zrusena' %}<span class="odznak odznak-zrusena">Zrušená</span>
+    {% endif %}
+    <a href="{{ url_for('admin_objednavky') }}" class="tlacitko tlacitko-sekundarni" style="margin-left:auto">← Zpět na objednávky</a>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+    {# Zákazník #}
+    <div class="admin-karta">
+        <h2 style="font-size:1rem;font-weight:700;margin:0 0 1rem">Zákazník</h2>
+        <p style="margin:.3rem 0"><strong>{{ objednavka.jmeno_zakaznika }}</strong></p>
+        <p style="margin:.3rem 0">{{ objednavka.email_zakaznika }}</p>
+        {% if objednavka.telefon_zakaznika %}<p style="margin:.3rem 0">{{ objednavka.telefon_zakaznika }}</p>{% endif %}
+        <p style="margin:.3rem 0">{{ objednavka.ulice }}, {{ objednavka.psc }} {{ objednavka.mesto }}</p>
+    </div>
+
+    {# Doprava a platba #}
+    <div class="admin-karta">
+        <h2 style="font-size:1rem;font-weight:700;margin:0 0 1rem">Doprava a platba</h2>
+        <p style="margin:.3rem 0"><strong>Doprava:</strong>
+            {% if objednavka.doprava == 'posta' %}Česká pošta (89 Kč)
+            {% else %}DPD (119 Kč){% endif %}
+        </p>
+        <p style="margin:.3rem 0"><strong>Platba:</strong>
+            {% if objednavka.platba == 'prevod' %}Bankovní převod
+            {% else %}Dobírka (+30 Kč){% endif %}
+        </p>
+        <p style="margin:.3rem 0"><strong>Datum:</strong> {{ objednavka.vytvoreno[:16] }}</p>
+    </div>
+</div>
+
+{# Položky objednávky #}
+<div class="admin-karta" style="padding:0">
+    <div style="padding:1.25rem 1.5rem .75rem;font-weight:700">Položky</div>
+    <table class="admin-tabulka">
+        <thead>
+            <tr>
+                <th>Produkt</th>
+                <th style="text-align:right">Cena/ks</th>
+                <th style="text-align:right">Množství</th>
+                <th style="text-align:right">Celkem</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pol in polozky %}
+            <tr>
+                <td>{{ pol.nazev_produktu }}</td>
+                <td style="text-align:right">{{ "%.2f"|format(pol.cena_produktu) }} Kč</td>
+                <td style="text-align:right">{{ pol.mnozstvi }}</td>
+                <td style="text-align:right">{{ "%.2f"|format(pol.cena_produktu * pol.mnozstvi) }} Kč</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" style="text-align:right;padding-right:.75rem;color:#666">Mezisoučet</td>
+                <td style="text-align:right">{{ "%.2f"|format(objednavka.mezisoucet) }} Kč</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:right;padding-right:.75rem;color:#666">
+                    Doprava ({% if objednavka.doprava == 'posta' %}Česká pošta{% else %}DPD{% endif %})
+                </td>
+                <td style="text-align:right">{{ "%.2f"|format(cena_dopravy) }} Kč</td>
+            </tr>
+            {% if poplatek_dobirka > 0 %}
+            <tr>
+                <td colspan="3" style="text-align:right;padding-right:.75rem;color:#666">Příplatek dobírka</td>
+                <td style="text-align:right">{{ "%.2f"|format(poplatek_dobirka) }} Kč</td>
+            </tr>
+            {% endif %}
+            {% if objednavka.sleva > 0 %}
+            <tr>
+                <td colspan="3" style="text-align:right;padding-right:.75rem;color:#2f9e44">
+                    Sleva
+                    {% if kupon %} (kupon: <strong>{{ kupon.kod }}</strong>){% endif %}
+                </td>
+                <td style="text-align:right;color:#2f9e44">−{{ "%.2f"|format(objednavka.sleva) }} Kč</td>
+            </tr>
+            {% endif %}
+            <tr style="font-weight:700;font-size:1.05rem">
+                <td colspan="3" style="text-align:right;padding-right:.75rem">Celkem</td>
+                <td style="text-align:right">{{ "%.2f"|format(objednavka.celkem) }} Kč</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+{# Změna stavu #}
+<div class="admin-karta">
+    <h2 style="font-size:1rem;font-weight:700;margin:0 0 1rem">Změnit stav objednávky</h2>
+    <form method="POST" style="display:flex;gap:.75rem;align-items:center">
+        <select name="stav" style="padding:.5rem .75rem;border:1px solid #ced4da;border-radius:5px;font-size:.95rem">
+            {% for stav in platne_stavy %}
+            <option value="{{ stav }}" {% if stav == objednavka.stav %}selected{% endif %}>
+                {% if stav == 'nova' %}Nová
+                {% elif stav == 'zaplacena' %}Zaplacená
+                {% elif stav == 'odeslana' %}Odeslaná
+                {% elif stav == 'dokoncena' %}Dokončená
+                {% elif stav == 'zrusena' %}Zrušená
+                {% endif %}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="tlacitko tlacitko-primarni">Aktualizovat stav</button>
+    </form>
+</div>
+{% endblock %}

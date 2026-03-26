@@ -1,0 +1,74 @@
+{% extends 'admin/zaklad.html' %}
+{% block titulek %}Slevové kupony{% endblock %}
+{% block obsah %}
+<h1 class="admin-nadpis">Slevové kupony</h1>
+
+{# Formulář přidání kuponu #}
+<div class="admin-karta">
+    <h2 style="font-size:1rem;font-weight:700;margin:0 0 1rem">Přidat nový kupon</h2>
+    <form method="POST" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.75rem;align-items:end">
+        <div class="formular-skupina" style="margin-bottom:0">
+            <label for="kod">Kód kuponu *</label>
+            <input type="text" id="kod" name="kod" value="{{ formular.get('kod', '') }}"
+                   placeholder="napr. SLEVA20" style="text-transform:uppercase">
+            {% if chyby.get('kod') %}<div class="chyba-pole">{{ chyby.kod }}</div>{% endif %}
+        </div>
+        <div class="formular-skupina" style="margin-bottom:0">
+            <label for="sleva_procent">Sleva (%) *</label>
+            <input type="number" id="sleva_procent" name="sleva_procent"
+                   value="{{ formular.get('sleva_procent', '') }}" min="1" max="100">
+            {% if chyby.get('sleva_procent') %}<div class="chyba-pole">{{ chyby.sleva_procent }}</div>{% endif %}
+        </div>
+        <div class="formular-skupina" style="margin-bottom:0">
+            <label for="datum_expirace">Platnost do</label>
+            <input type="date" id="datum_expirace" name="datum_expirace"
+                   value="{{ formular.get('datum_expirace', '') }}">
+        </div>
+        <div class="formular-skupina" style="margin-bottom:0">
+            <label for="limit_pouziti">Limit použití</label>
+            <input type="number" id="limit_pouziti" name="limit_pouziti"
+                   value="{{ formular.get('limit_pouziti', '') }}" min="1" placeholder="neomezeno">
+            {% if chyby.get('limit_pouziti') %}<div class="chyba-pole">{{ chyby.limit_pouziti }}</div>{% endif %}
+        </div>
+        <div>
+            <button type="submit" class="tlacitko tlacitko-primarni">Přidat kupon</button>
+        </div>
+    </form>
+</div>
+
+{# Seznam kuponů #}
+<div class="admin-karta" style="padding:0">
+    <table class="admin-tabulka">
+        <thead>
+            <tr>
+                <th>Kód</th>
+                <th>Sleva</th>
+                <th>Platnost do</th>
+                <th>Limit</th>
+                <th>Použito</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for kupon in kupony %}
+            <tr>
+                <td><strong>{{ kupon.kod }}</strong></td>
+                <td>{{ kupon.sleva_procent }} %</td>
+                <td>{{ kupon.datum_expirace or '—' }}</td>
+                <td>{{ kupon.limit_pouziti or '∞' }}</td>
+                <td>{{ kupon.pocet_pouziti }}</td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('admin_smazat_kupon', kupon_id=kupon.id) }}"
+                          onsubmit="return confirm('Opravdu smazat kupon {{ kupon.kod }}?')">
+                        <button type="submit" class="tlacitko tlacitko-nebezpeci">Smazat</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6" style="text-align:center;color:#888;padding:2rem">Žádné kupony.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

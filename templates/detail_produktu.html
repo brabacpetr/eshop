@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block titulek %}{{ produkt['nazev'] }} — E-shop{% endblock %}
+
+{% block obsah %}
+<nav class="drobecky">
+    <a href="{{ url_for('index') }}">Domů</a> &rsaquo;
+    <a href="{{ url_for('produkty') }}">Produkty</a> &rsaquo;
+    {{ produkt['nazev'] }}
+</nav>
+
+<div class="produkt-detail">
+    <div class="produkt-detail-obrazek">
+        {% if produkt['obrazek'] %}
+        <img src="{{ url_for('static', filename='uploads/' + produkt['obrazek']) }}" alt="{{ produkt['nazev'] }}">
+        {% else %}
+        <div class="produkt-obrazek-placeholder">Bez obrázku</div>
+        {% endif %}
+    </div>
+
+    <div class="produkt-detail-info">
+        <h1>{{ produkt['nazev'] }}</h1>
+
+        {% if produkt['kategorie_nazev'] %}
+        <p class="produkt-kategorie">Kategorie: <strong>{{ produkt['kategorie_nazev'] }}</strong></p>
+        {% endif %}
+
+        <p class="produkt-cena">{{ "%.2f"|format(produkt['cena']) }} Kč</p>
+
+        {% if produkt['sklad'] > 0 %}
+        <p class="stav-skladem">&#10003; Skladem ({{ produkt['sklad'] }} ks)</p>
+        {% else %}
+        <p class="stav-vyprodano">&#10007; Vyprodáno</p>
+        {% endif %}
+
+        {% if produkt['popis'] %}
+        <div class="produkt-popis">
+            <p>{{ produkt['popis'] }}</p>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/kosik/pridat" class="kosik-formular">
+            <input type="hidden" name="produkt_id" value="{{ produkt['id'] }}">
+            <div class="mnozstvi-pole">
+                <label for="mnozstvi">Množství:</label>
+                <input type="number" id="mnozstvi" name="mnozstvi"
+                       value="1" min="1" max="{{ produkt['sklad'] }}"
+                       {% if produkt['sklad'] == 0 %}disabled{% endif %}>
+            </div>
+            <button type="submit" class="tlacitko"
+                    {% if produkt['sklad'] == 0 %}disabled{% endif %}>
+                {% if produkt['sklad'] > 0 %}Přidat do košíku{% else %}Vyprodáno{% endif %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

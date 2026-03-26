@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulek %}E-shop{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navigace">
+        <ul>
+            <li><a href="/">Domů</a></li>
+            <li><a href="/produkty">Produkty</a></li>
+            <li>
+                <a href="/kosik">Košík</a>
+                {% set pocet_polozek = session.get('kosik', {})|length %}
+                {% if pocet_polozek > 0 %}
+                    <span class="zarazka">{{ pocet_polozek }}</span>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+
+    {% with zpravy = get_flashed_messages(with_categories=True) %}
+        {% if zpravy %}
+            <div class="zpravy">
+                {% for kategorie, zprava in zpravy %}
+                    <div class="zprava zprava-{{ kategorie }}">{{ zprava }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main class="obsah">
+        {% block obsah %}{% endblock %}
+    </main>
+
+    <footer class="paticka">
+        <p>&copy; 2026 MůjShop — Váš online obchod s nejlepšími produkty</p>
+        <nav class="paticka-odkazy">
+            <a href="/stranka/podminky">Obchodní podmínky</a>
+            <a href="/stranka/soukromi">Ochrana osobních údajů</a>
+            <a href="/stranka/vraceni">Vrácení zboží</a>
+        </nav>
+    </footer>
+</body>
+</html>

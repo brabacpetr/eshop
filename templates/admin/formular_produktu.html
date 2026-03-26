@@ -1,0 +1,84 @@
+{% extends 'admin/zaklad.html' %}
+{% block titulek %}{{ 'Nový produkt' if not produkt or not produkt.get('id') else 'Upravit produkt' }}{% endblock %}
+
+{% block obsah %}
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+    <a href="{{ url_for('admin_produkty') }}" class="tlacitko tlacitko-sekundarni">← Zpět</a>
+    <h1 class="admin-nadpis" style="margin:0">
+        {{ 'Nový produkt' if not produkt or not produkt.get('id') else 'Upravit produkt' }}
+    </h1>
+</div>
+
+<div class="admin-karta" style="max-width:680px">
+    <form method="post" enctype="multipart/form-data">
+
+        <div class="formular-skupina">
+            <label for="nazev">Název *</label>
+            <input type="text" id="nazev" name="nazev"
+                   value="{{ produkt['nazev'] if produkt else '' }}" required>
+            {% if chyby.get('nazev') %}<div class="chyba-pole">{{ chyby['nazev'] }}</div>{% endif %}
+        </div>
+
+        <div class="formular-skupina">
+            <label for="popis">Popis</label>
+            <textarea id="popis" name="popis">{{ produkt['popis'] if produkt else '' }}</textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="formular-skupina">
+                <label for="cena">Cena (Kč) *</label>
+                <input type="number" id="cena" name="cena" step="0.01" min="0.01"
+                       value="{{ produkt['cena'] if produkt else '' }}" required>
+                {% if chyby.get('cena') %}<div class="chyba-pole">{{ chyby['cena'] }}</div>{% endif %}
+            </div>
+            <div class="formular-skupina">
+                <label for="sklad">Sklad (ks) *</label>
+                <input type="number" id="sklad" name="sklad" min="0"
+                       value="{{ produkt['sklad'] if produkt else 0 }}" required>
+                {% if chyby.get('sklad') %}<div class="chyba-pole">{{ chyby['sklad'] }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="formular-skupina">
+            <label for="kategorie_id">Kategorie</label>
+            <select id="kategorie_id" name="kategorie_id">
+                <option value="">— bez kategorie —</option>
+                {% for kat in kategorie %}
+                    <option value="{{ kat['id'] }}"
+                        {% if produkt and produkt.get('kategorie_id') == kat['id'] %}selected{% endif %}>
+                        {{ kat['nazev'] }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="formular-skupina">
+            <label>
+                <input type="checkbox" name="je_doporuceny" value="1"
+                       {% if produkt and produkt.get('je_doporuceny') %}checked{% endif %}>
+                Zobrazit na hlavní stránce (doporučený produkt)
+            </label>
+        </div>
+
+        <div class="formular-skupina">
+            <label for="obrazek">
+                Obrázek {% if not produkt or not produkt.get('id') %}*{% else %}(nechte prázdné pro zachování stávajícího){% endif %}
+            </label>
+            {% if produkt and produkt.get('obrazek') %}
+                <div style="margin-bottom:.5rem">
+                    <img src="{{ url_for('static', filename='uploads/' ~ produkt['obrazek']) }}"
+                         alt="Aktuální obrázek" style="height:80px;border-radius:4px;object-fit:cover">
+                </div>
+            {% endif %}
+            <input type="file" id="obrazek" name="obrazek" accept="image/*"
+                   {% if not produkt or not produkt.get('id') %}required{% endif %}>
+            {% if chyby.get('obrazek') %}<div class="chyba-pole">{{ chyby['obrazek'] }}</div>{% endif %}
+        </div>
+
+        <div style="display:flex;gap:.75rem;margin-top:1.5rem">
+            <button type="submit" class="tlacitko tlacitko-primarni">Uložit produkt</button>
+            <a href="{{ url_for('admin_produkty') }}" class="tlacitko tlacitko-sekundarni">Zrušit</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

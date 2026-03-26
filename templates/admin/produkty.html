@@ -1,0 +1,56 @@
+{% extends 'admin/zaklad.html' %}
+{% block titulek %}Produkty{% endblock %}
+
+{% block obsah %}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+    <h1 class="admin-nadpis" style="margin:0">Produkty</h1>
+    <a href="{{ url_for('admin_novy_produkt') }}" class="tlacitko tlacitko-primarni">+ Přidat produkt</a>
+</div>
+
+<div class="admin-karta">
+    <table class="admin-tabulka">
+        <thead>
+            <tr>
+                <th>Obrázek</th>
+                <th>Název</th>
+                <th>Kategorie</th>
+                <th>Cena</th>
+                <th>Sklad</th>
+                <th>Doporučený</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produkt in produkty %}
+            <tr>
+                <td>
+                    {% if produkt['obrazek'] %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ produkt['obrazek']) }}"
+                             alt="{{ produkt['nazev'] }}" class="miniatura">
+                    {% else %}
+                        <span style="color:#aaa;font-size:.8rem">—</span>
+                    {% endif %}
+                </td>
+                <td>{{ produkt['nazev'] }}</td>
+                <td>{{ produkt['kategorie_nazev'] or '—' }}</td>
+                <td>{{ produkt['cena'] | round(2) }} Kč</td>
+                <td>{{ produkt['sklad'] }}</td>
+                <td>{{ 'Ano' if produkt['je_doporuceny'] else 'Ne' }}</td>
+                <td style="text-align:right;white-space:nowrap">
+                    <a href="{{ url_for('admin_upravit_produkt', produkt_id=produkt['id']) }}"
+                       class="tlacitko tlacitko-sekundarni">Upravit</a>
+                    <form method="post" action="{{ url_for('admin_smazat_produkt', produkt_id=produkt['id']) }}"
+                          style="display:inline">
+                        <button type="submit" class="tlacitko tlacitko-nebezpeci"
+                                data-nazev="{{ produkt['nazev'] }}"
+                                onclick="return confirm('Opravdu smazat produkt ' + this.dataset.nazev + '?')">Smazat</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" style="color:#888;text-align:center">Žádné produkty.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

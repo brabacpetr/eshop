@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Košík — E-shop{% endblock %}
+
+{% block obsah %}
+<h1>Nákupní košík</h1>
+
+{% if not polozky %}
+<div class="prazdny-stav">
+    <p>Váš košík je prázdný.</p>
+    <a href="{{ url_for('produkty') }}" class="tlacitko" style="margin-top: 1rem; display: inline-block;">Přejít na produkty</a>
+</div>
+{% else %}
+
+<table class="kosik-tabulka">
+    <thead>
+        <tr>
+            <th>Produkt</th>
+            <th>Cena</th>
+            <th>Množství</th>
+            <th>Celkem</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for polozka in polozky %}
+        <tr>
+            <td>
+                <div class="kosik-produkt">
+                    {% if polozka.obrazek %}
+                    <img src="{{ url_for('static', filename='uploads/' + polozka.obrazek) }}" alt="{{ polozka.nazev }}" class="kosik-thumbnail">
+                    {% else %}
+                    <div class="kosik-thumbnail-placeholder"></div>
+                    {% endif %}
+                    <a href="{{ url_for('detail_produktu', produkt_id=polozka.produkt_id) }}">{{ polozka.nazev }}</a>
+                </div>
+            </td>
+            <td>{{ "%.2f"|format(polozka.cena) }} Kč</td>
+            <td>
+                <form method="POST" action="/kosik/aktualizovat" class="aktualizovat-formular">
+                    <input type="hidden" name="produkt_id" value="{{ polozka.produkt_id }}">
+                    <input type="number" name="mnozstvi" value="{{ polozka.mnozstvi }}"
+                           min="0" max="{{ polozka.sklad }}" class="mnozstvi-maly">
+                    <button type="submit" class="tlacitko-link">Aktualizovat</button>
+                </form>
+            </td>
+            <td>{{ "%.2f"|format(polozka.radek_cena) }} Kč</td>
+            <td>
+                <form method="POST" action="/kosik/odebrat">
+                    <input type="hidden" name="produkt_id" value="{{ polozka.produkt_id }}">
+                    <button type="submit" class="tlacitko-nebezpecny" title="Odebrat">&#10007;</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="kosik-spodni">
+    <div class="kupon-sekce">
+        <h3>Slevový kupón</h3>
+        {% if kupon %}
+        <p class="kupon-aktivni">&#10003; Uplatněn kupón <strong>{{ kupon['kod'] }}</strong> — sleva {{ kupon['sleva_procent'] }} %</p>
+        {% else %}
+        <form method="POST" action="/kosik/kupon" class="kupon-formular">
+            <input type="text" name="kod" placeholder="Kód kupónu" class="kupon-vstup" maxlength="50">
+            <button type="submit" class="tlacitko-outline">Uplatnit</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="kosik-souhrn">
+        <div class="souhrn-radek">
+            <span>Mezisoučet:</span>
+            <span>{{ "%.2f"|format(mezisoucet) }} Kč</span>
+        </div>
+        {% if sleva > 0 %}
+        <div class="souhrn-radek souhrn-sleva">
+            <span>Sleva ({{ kupon['sleva_procent'] }} %):</span>
+            <span>−{{ "%.2f"|format(sleva) }} Kč</span>
+        </div>
+        {% endif %}
+        <div class="souhrn-radek souhrn-celkem">
+            <span>Celkem:</span>
+            <span>{{ "%.2f"|format(celkem) }} Kč</span>
+        </div>
+    </div>
+</div>
+
+<div class="kosik-akce">
+    <a href="{{ url_for('produkty') }}" class="tlacitko-outline">&#8592; Pokračovat v nákupu</a>
+    <a href="/pokladna" class="tlacitko">Přejít k pokladně &#8594;</a>
+</div>
+
+{% endif %}
+{% endblock %}

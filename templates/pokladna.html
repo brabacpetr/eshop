@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Pokladna — E-shop{% endblock %}
+
+{% block obsah %}
+<h1>Pokladna</h1>
+
+<div class="pokladna-rozlozeni">
+
+    <aside class="pokladna-souhrn">
+        <h2>Souhrn objednávky</h2>
+
+        <ul class="souhrn-polozky">
+            {% for polozka in polozky %}
+            <li class="souhrn-polozka">
+                <span class="souhrn-nazev">{{ polozka.nazev }} <small>&times;{{ polozka.mnozstvi }}</small></span>
+                <span class="souhrn-cena">{{ "%.2f"|format(polozka.radek_cena) }} Kč</span>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="souhrn-radek">
+            <span>Mezisoučet:</span>
+            <span>{{ "%.2f"|format(mezisoucet) }} Kč</span>
+        </div>
+        <div class="souhrn-radek souhrn-doprava">
+            <span>Doprava:</span>
+            <span id="cena-dopravy">—</span>
+        </div>
+        <div class="souhrn-radek souhrn-platba" id="radek-dobirka" style="display:none">
+            <span>Dobírka:</span>
+            <span>+{{ priplatek_dobirka|int }} Kč</span>
+        </div>
+        {% if sleva > 0 %}
+        <div class="souhrn-radek souhrn-sleva">
+            <span>Sleva ({{ kupon['sleva_procent'] }} %):</span>
+            <span>−{{ "%.2f"|format(sleva) }} Kč</span>
+        </div>
+        {% endif %}
+        <div class="souhrn-radek souhrn-celkem">
+            <span>Celkem:</span>
+            <span id="celkova-cena">{{ "%.2f"|format(mezisoucet - sleva) }} Kč</span>
+        </div>
+    </aside>
+
+    <form method="POST" action="/pokladna" class="pokladna-formular">
+
+        <section class="pokladna-sekce">
+            <h2>Kontaktní údaje</h2>
+
+            <div class="formular-pole {% if chyby.jmeno %}pole-chyba{% endif %}">
+                <label for="jmeno">Jméno a příjmení *</label>
+                <input type="text" id="jmeno" name="jmeno" required
+                       value="{{ formular.jmeno or '' }}">
+                {% if chyby.jmeno %}<span class="chyba-text">{{ chyby.jmeno }}</span>{% endif %}
+            </div>
+
+            <div class="formular-pole {% if chyby.email %}pole-chyba{% endif %}">
+                <label for="email">E-mail *</label>
+                <input type="email" id="email" name="email" required
+                       value="{{ formular.email or '' }}">
+                {% if chyby.email %}<span class="chyba-text">{{ chyby.email }}</span>{% endif %}
+            </div>
+
+            <div class="formular-pole">
+                <label for="telefon">Telefon</label>
+                <input type="tel" id="telefon" name="telefon"
+                       value="{{ formular.telefon or '' }}">
+            </div>
+        </section>
+
+        <section class="pokladna-sekce">
+            <h2>Doručovací adresa</h2>
+
+            <div class="formular-pole {% if chyby.ulice %}pole-chyba{% endif %}">
+                <label for="ulice">Ulice a číslo popisné *</label>
+                <input type="text" id="ulice" name="ulice" required
+                       value="{{ formular.ulice or '' }}">
+                {% if chyby.ulice %}<span class="chyba-text">{{ chyby.ulice }}</span>{% endif %}
+            </div>
+
+            <div class="formular-radek">
+                <div class="formular-pole {% if chyby.mesto %}pole-chyba{% endif %}">
+                    <label for="mesto">Město *</label>
+                    <input type="text" id="mesto" name="mesto" required
+                           value="{{ formular.mesto or '' }}">
+                    {% if chyby.mesto %}<span class="chyba-text">{{ chyby.mesto }}</span>{% endif %}
+                </div>
+                <div class="formular-pole {% if chyby.psc %}pole-chyba{% endif %}">
+                    <label for="psc">PSČ *</label>
+                    <input type="text" id="psc" name="psc" required maxlength="6"
+                           value="{{ formular.psc or '' }}">
+                    {% if chyby.psc %}<span class="chyba-text">{{ chyby.psc }}</span>{% endif %}
+                </div>
+            </div>
+        </section>
+
+        <section class="pokladna-sekce">
+            <h2>Způsob dopravy</h2>
+            {% if chyby.doprava %}<p class="chyba-text">{{ chyby.doprava }}</p>{% endif %}
+
+            <label class="moznost-dopravy {% if formular.doprava == 'posta' %}aktivni{% endif %}">
+                <input type="radio" name="doprava" value="posta"
+                       {% if formular.doprava == 'posta' or not formular %}checked{% endif %}>
+                <span class="moznost-nazev">Česká pošta</span>
+                <span class="moznost-cena">89 Kč</span>
+            </label>
+
+            <label class="moznost-dopravy {% if formular.doprava == 'dpd' %}aktivni{% endif %}">
+                <input type="radio" name="doprava" value="dpd"
+                       {% if formular.doprava == 'dpd' %}checked{% endif %}>
+                <span class="moznost-nazev">DPD</span>
+                <span class="moznost-cena">119 Kč</span>
+            </label>
+        </section>
+
+        <section class="pokladna-sekce">
+            <h2>Způsob platby</h2>
+            {% if chyby.platba %}<p class="chyba-text">{{ chyby.platba }}</p>{% endif %}
+
+            <label class="moznost-platby {% if formular.platba == 'prevod' %}aktivni{% endif %}">
+                <input type="radio" name="platba" value="prevod"
+                       {% if formular.platba == 'prevod' or not formular %}checked{% endif %}>
+                <span class="moznost-nazev">Bankovní převod</span>
+                <span class="moznost-cena">zdarma</span>
+            </label>
+
+            <label class="moznost-platby {% if formular.platba == 'dobirka' %}aktivni{% endif %}">
+                <input type="radio" name="platba" value="dobirka"
+                       {% if formular.platba == 'dobirka' %}checked{% endif %}>
+                <span class="moznost-nazev">Dobírka</span>
+                <span class="moznost-cena">+{{ priplatek_dobirka|int }} Kč</span>
+            </label>
+        </section>
+
+        <button type="submit" class="tlacitko tlacitko-velky">Odeslat objednávku &#8594;</button>
+
+    </form>
+
+</div>
+
+<script>
+// Živý výpočet celkové ceny při výběru dopravy/platby
+(function () {
+    var mezisoucet = {{ mezisoucet }};
+    var sleva = {{ sleva }};
+    var cenaDopravy = { posta: 89, dpd: 119 };
+    var priplatekDobirka = {{ priplatek_dobirka }};
+
+    function aktualizujSouhrn() {
+        var doprava = document.querySelector('input[name="doprava"]:checked');
+        var platba = document.querySelector('input[name="platba"]:checked');
+        var hodnotaDopravy = doprava ? cenaDopravy[doprava.value] : 0;
+        var hodnotaDobirky = (platba && platba.value === 'dobirka') ? priplatekDobirka : 0;
+
+        document.getElementById('cena-dopravy').textContent =
+            doprava ? hodnotaDopravy + ' Kč' : '—';
+        document.getElementById('radek-dobirka').style.display =
+            hodnotaDobirky > 0 ? '' : 'none';
+
+        var celkem = mezisoucet + hodnotaDopravy + hodnotaDobirky - sleva;
+        document.getElementById('celkova-cena').textContent =
+            celkem.toFixed(2).replace('.', ',') + ' Kč';
+    }
+
+    document.querySelectorAll('input[name="doprava"], input[name="platba"]')
+        .forEach(function (el) { el.addEventListener('change', aktualizujSouhrn); });
+    aktualizujSouhrn();
+})();
+</script>
+
+{% endblock %}

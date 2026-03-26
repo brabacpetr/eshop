@@ -1,0 +1,48 @@
+{% extends 'admin/zaklad.html' %}
+{% block titulek %}Kategorie{% endblock %}
+
+{% block obsah %}
+<h1 class="admin-nadpis">Kategorie</h1>
+
+<div class="admin-karta" style="max-width:480px">
+    <h2 style="margin:0 0 1rem;font-size:1rem">Přidat kategorii</h2>
+    <form method="post" style="display:flex;gap:.6rem;align-items:flex-start">
+        <div style="flex:1">
+            <input type="text" name="nazev" placeholder="Název kategorie" required
+                   style="width:100%;padding:.5rem .75rem;border:1px solid #ced4da;border-radius:5px;font-size:.95rem;box-sizing:border-box">
+        </div>
+        <button type="submit" class="tlacitko tlacitko-primarni">Přidat</button>
+    </form>
+</div>
+
+<div class="admin-karta">
+    <table class="admin-tabulka">
+        <thead>
+            <tr>
+                <th>Název</th>
+                <th>Počet produktů</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for kat in kategorie %}
+            <tr>
+                <td>{{ kat['nazev'] }}</td>
+                <td>{{ kat['pocet_produktu'] }}</td>
+                <td style="text-align:right">
+                    <form method="post" action="{{ url_for('admin_smazat_kategorii', kategorie_id=kat['id']) }}"
+                          onsubmit="return confirm('Opravdu smazat kategorii „{{ kat['nazev'] }}"?')">
+                        <button type="submit" class="tlacitko tlacitko-nebezpeci"
+                                {% if kat['pocet_produktu'] > 0 %}disabled title="Kategorie obsahuje produkty"{% endif %}>
+                            Smazat
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" style="color:#888;text-align:center">Žádné kategorie.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

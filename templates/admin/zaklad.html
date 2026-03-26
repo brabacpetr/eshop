@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulek %}Administrace{% endblock %} — MůjShop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .admin-obal { display: flex; min-height: 100vh; }
+        .admin-postrani { width: 220px; background: #1e2330; color: #c8ccd8; padding: 1.5rem 0; flex-shrink: 0; }
+        .admin-postrani .logo { padding: 0 1.2rem 1.5rem; font-weight: 700; font-size: 1.1rem; color: #fff; border-bottom: 1px solid #2e3448; margin-bottom: 1rem; }
+        .admin-postrani nav a { display: block; padding: .65rem 1.2rem; color: #c8ccd8; text-decoration: none; font-size: .92rem; }
+        .admin-postrani nav a:hover, .admin-postrani nav a.aktivni { background: #2e3448; color: #fff; }
+        .admin-postrani nav .oddelovac { border-top: 1px solid #2e3448; margin: .75rem 0; }
+        .admin-hlavni { flex: 1; padding: 2rem; background: #f4f6fb; }
+        .admin-nadpis { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e2330; }
+        .admin-karta { background: #fff; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.07); margin-bottom: 1.5rem; }
+        .admin-tabulka { width: 100%; border-collapse: collapse; }
+        .admin-tabulka th { text-align: left; padding: .55rem .75rem; background: #f0f2f8; font-size: .82rem; text-transform: uppercase; color: #555; }
+        .admin-tabulka td { padding: .6rem .75rem; border-top: 1px solid #eee; vertical-align: middle; }
+        .admin-tabulka tr:hover td { background: #fafbff; }
+        .tlacitko { display: inline-block; padding: .45rem .9rem; border-radius: 5px; border: none; cursor: pointer; font-size: .88rem; text-decoration: none; }
+        .tlacitko-primarni { background: #3b5bdb; color: #fff; }
+        .tlacitko-primarni:hover { background: #2f4bbf; }
+        .tlacitko-nebezpeci { background: #e03131; color: #fff; }
+        .tlacitko-nebezpeci:hover { background: #c22626; }
+        .tlacitko-sekundarni { background: #e9ecef; color: #333; }
+        .tlacitko-sekundarni:hover { background: #dee2e6; }
+        .odznak { display: inline-block; padding: .2rem .55rem; border-radius: 12px; font-size: .75rem; font-weight: 600; }
+        .odznak-nova { background: #dbe4ff; color: #3b5bdb; }
+        .odznak-zaplacena { background: #d3f9d8; color: #2f9e44; }
+        .odznak-odeslana { background: #ffe8cc; color: #e8590c; }
+        .odznak-dokoncena { background: #e9ecef; color: #555; }
+        .odznak-zrusena { background: #ffe0e0; color: #c92a2a; }
+        .formular-skupina { margin-bottom: 1rem; }
+        .formular-skupina label { display: block; font-size: .88rem; font-weight: 600; margin-bottom: .3rem; color: #333; }
+        .formular-skupina input, .formular-skupina select, .formular-skupina textarea { width: 100%; padding: .5rem .75rem; border: 1px solid #ced4da; border-radius: 5px; font-size: .95rem; box-sizing: border-box; }
+        .formular-skupina textarea { height: 100px; resize: vertical; }
+        .chyba-pole { color: #c92a2a; font-size: .82rem; margin-top: .25rem; }
+        .mrizka-statistik { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .statistika-karta { background: #fff; border-radius: 8px; padding: 1.25rem 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+        .statistika-karta .cislo { font-size: 2rem; font-weight: 700; color: #3b5bdb; }
+        .statistika-karta .popis { font-size: .85rem; color: #666; margin-top: .2rem; }
+        .miniatura { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="admin-obal">
+    <aside class="admin-postrani">
+        <div class="logo">MůjShop Admin</div>
+        <nav>
+            <a href="{{ url_for('admin_prehled') }}" {% if request.endpoint == 'admin_prehled' %}class="aktivni"{% endif %}>Přehled</a>
+            <a href="{{ url_for('admin_produkty') }}" {% if request.endpoint in ('admin_produkty','admin_novy_produkt','admin_upravit_produkt') %}class="aktivni"{% endif %}>Produkty</a>
+            <a href="{{ url_for('admin_kategorie') }}" {% if request.endpoint == 'admin_kategorie' %}class="aktivni"{% endif %}>Kategorie</a>
+            <a href="{{ url_for('admin_objednavky') }}" {% if request.endpoint in ('admin_objednavky','admin_detail_objednavky') %}class="aktivni"{% endif %}>Objednávky</a>
+            <a href="{{ url_for('admin_kupony') }}" {% if request.endpoint == 'admin_kupony' %}class="aktivni"{% endif %}>Kupony</a>
+            <div class="oddelovac"></div>
+            <a href="{{ url_for('index') }}">← E-shop</a>
+            <a href="{{ url_for('admin_odhlaseni') }}">Odhlásit</a>
+        </nav>
+    </aside>
+    <div class="admin-hlavni">
+        {% with zpravy = get_flashed_messages(with_categories=True) %}
+            {% if zpravy %}
+                <div style="margin-bottom:1rem">
+                    {% for kategorie, zprava in zpravy %}
+                        <div class="zprava zprava-{{ kategorie }}">{{ zprava }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block obsah %}{% endblock %}
+    </div>
+</div>
+</body>
+</html>
