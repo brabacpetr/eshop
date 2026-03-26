@@ -10,16 +10,26 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  background: #f8f8f8;
-  color: #222;
+  background: #f4efe6;
+  color: #2a1f14;
 }
 
 /* Navigace */
 .navigace {
   display: flex;
-  background: #2c3e50;
+  align-items: center;
+  background: #2d5a27;
   padding: 0.75rem 1.5rem;
   gap: 1rem;
+  border-bottom: 3px solid #7c5235;
+}
+
+.navigace ul {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  list-style: none;
+  width: 100%;
 }
 
 .navigace a {
@@ -31,6 +41,24 @@ body {
 
 .navigace a:hover {
   background: rgba(255, 255, 255, 0.15);
+}
+
+/* Logo v navigaci */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.nav-logo:hover {
+  background: transparent;
+  opacity: 0.88;
 }
 
 /* Kosik Pocet */
@@ -60,13 +88,13 @@ body {
 
 .zprava-success {
   background: #d4edda;
-  border-color: #28a745;
+  border-color: #27ae60;
 }
 
 .zprava-error,
 .zprava-danger {
   background: #f8d7da;
-  border-color: #dc3545;
+  border-color: #c0392b;
 }
 
 .zprava-info {
@@ -76,18 +104,19 @@ body {
 
 /* Paticka */
 .paticka {
-  background: #2c3e50;
-  color: #aaa;
+  background: #2d5a27;
+  color: #c8a882;
   text-align: center;
   padding: 1.5rem;
   margin-top: 3rem;
   font-size: 0.9rem;
+  border-top: 3px solid #7c5235;
 }
 
 /* ===== Tlačítka ===== */
 .tlacitko {
     display: inline-block;
-    background: #2c3e50;
+    background: #2d5a27;
     color: #fff;
     padding: 0.5rem 1.2rem;
     border-radius: 4px;
@@ -99,23 +128,23 @@ body {
 }
 
 .tlacitko:hover {
-    background: #1a252f;
+    background: #1e3d1a;
 }
 
 .tlacitko[disabled] {
-    background: #95a5a6;
+    background: #a89880;
     cursor: not-allowed;
 }
 
 .tlacitko-outline {
     background: transparent;
-    color: #2c3e50;
-    border: 2px solid #2c3e50;
+    color: #2d5a27;
+    border: 2px solid #2d5a27;
     padding: 0.4rem 1.1rem;
 }
 
 .tlacitko-outline:hover {
-    background: #2c3e50;
+    background: #2d5a27;
     color: #fff;
 }
 
@@ -128,9 +157,10 @@ body {
 }
 
 .produkt-karta {
-    background: #fff;
+    background: #faf7f2;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #d4c4a8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -146,11 +176,11 @@ body {
 .produkt-obrazek-placeholder {
     width: 100%;
     aspect-ratio: 4/3;
-    background: #ecf0f1;
+    background: #e8e0d0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #95a5a6;
+    color: #7a6a57;
     font-size: 0.9rem;
 }
 
@@ -165,18 +195,18 @@ body {
 .produkt-info h3 {
     font-size: 1rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: #2a1f14;
 }
 
 .produkt-kategorie {
     font-size: 0.85rem;
-    color: #7f8c8d;
+    color: #7a6a57;
 }
 
 .produkt-cena {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #2c3e50;
+    color: #7c5235;
     margin-top: auto;
     padding-top: 0.5rem;
 }
@@ -194,7 +224,7 @@ body {
     font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #7f8c8d;
+    color: #7a6a57;
 }
 
 .kategorie-filtr ul {
@@ -209,26 +239,26 @@ body {
     padding: 0.4rem 0.75rem;
     border-radius: 4px;
     text-decoration: none;
-    color: #2c3e50;
-    background: #ecf0f1;
+    color: #2a1f14;
+    background: #e8e0d0;
     font-size: 0.95rem;
     transition: background 0.2s;
 }
 
 .kategorie-filtr a:hover,
 .kategorie-filtr a.aktivni {
-    background: #2c3e50;
+    background: #2d5a27;
     color: #fff;
 }
 
 .pocet-produktu {
     font-size: 0.9rem;
-    color: #7f8c8d;
+    color: #7a6a57;
     margin-bottom: 1rem;
 }
 
 .prazdny-stav {
-    color: #7f8c8d;
+    color: #7a6a57;
     margin-top: 2rem;
 }
 
@@ -255,23 +285,23 @@ body {
 
 .produkt-detail-info h1 {
     font-size: 1.8rem;
-    color: #2c3e50;
+    color: #2a1f14;
 }
 
 .stav-skladem {
-    color: #27ae60;
+    color: #2d7a2d;
     font-weight: 600;
 }
 
 .stav-vyprodano {
-    color: #e74c3c;
+    color: #c0392b;
     font-weight: 600;
 }
 
 .produkt-popis {
-    color: #555;
+    color: #4a3828;
     line-height: 1.6;
-    border-top: 1px solid #ecf0f1;
+    border-top: 1px solid #d4c4a8;
     padding-top: 0.75rem;
     margin-top: 0.25rem;
 }
@@ -292,7 +322,7 @@ body {
 .mnozstvi-pole input[type=number] {
     width: 70px;
     padding: 0.4rem 0.5rem;
-    border: 1px solid #bdc3c7;
+    border: 1px solid #c8a882;
     border-radius: 4px;
     font-size: 1rem;
 }
@@ -300,12 +330,12 @@ body {
 /* ===== Drobečková navigace ===== */
 .drobecky {
     font-size: 0.875rem;
-    color: #7f8c8d;
+    color: #7a6a57;
     margin-bottom: 1.5rem;
 }
 
 .drobecky a {
-    color: #7f8c8d;
+    color: #7a6a57;
     text-decoration: none;
 }
 
@@ -316,7 +346,7 @@ body {
 /* ===== Domovská stránka ===== */
 .doporucene-produkty h2 {
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: #2a1f14;
 }
 
 .vsechny-produkty-odkaz {
@@ -335,13 +365,13 @@ body {
 .kosik-tabulka td {
     padding: 0.75rem;
     text-align: left;
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid #d4c4a8;
     vertical-align: middle;
 }
 
 .kosik-tabulka th {
     font-weight: 600;
-    color: #7f8c8d;
+    color: #7a6a57;
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -354,7 +384,7 @@ body {
 }
 
 .kosik-produkt a {
-    color: #2c3e50;
+    color: #2a1f14;
     text-decoration: none;
 }
 
@@ -373,7 +403,7 @@ body {
 .kosik-thumbnail-placeholder {
     width: 60px;
     height: 60px;
-    background: #ecf0f1;
+    background: #e8e0d0;
     border-radius: 4px;
     flex-shrink: 0;
 }
@@ -381,7 +411,7 @@ body {
 .mnozstvi-maly {
     width: 60px;
     padding: 0.3rem 0.4rem;
-    border: 1px solid #bdc3c7;
+    border: 1px solid #c8a882;
     border-radius: 4px;
     font-size: 0.95rem;
 }
@@ -389,7 +419,7 @@ body {
 .tlacitko-link {
     background: none;
     border: none;
-    color: #2c3e50;
+    color: #2d5a27;
     text-decoration: underline;
     cursor: pointer;
     font-size: 0.85rem;
@@ -397,13 +427,13 @@ body {
 }
 
 .tlacitko-link:hover {
-    color: #1a252f;
+    color: #1e3d1a;
 }
 
 .tlacitko-nebezpecny {
     background: none;
     border: none;
-    color: #e74c3c;
+    color: #c0392b;
     cursor: pointer;
     font-size: 1.1rem;
     padding: 0.2rem 0.4rem;
@@ -422,13 +452,13 @@ body {
     align-items: start;
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 2px solid #ecf0f1;
+    border-top: 2px solid #d4c4a8;
 }
 
 .kupon-sekce h3 {
     font-size: 0.95rem;
     margin-bottom: 0.75rem;
-    color: #555;
+    color: #4a3828;
     font-weight: 600;
 }
 
@@ -440,7 +470,7 @@ body {
 .kupon-vstup {
     flex: 1;
     padding: 0.4rem 0.75rem;
-    border: 1px solid #bdc3c7;
+    border: 1px solid #c8a882;
     border-radius: 4px;
     font-size: 0.95rem;
     text-transform: uppercase;
@@ -470,9 +500,9 @@ body {
 .souhrn-celkem {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #2c3e50;
+    color: #7c5235;
     padding-top: 0.5rem;
-    border-top: 1px solid #ecf0f1;
+    border-top: 1px solid #d4c4a8;
     margin-top: 0.25rem;
 }
 
@@ -482,7 +512,7 @@ body {
     align-items: center;
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #ecf0f1;
+    border-top: 1px solid #d4c4a8;
 }
 
 .aktualizovat-formular {
@@ -501,7 +531,7 @@ body {
 }
 
 .paticka-odkazy a {
-    color: #aaa;
+    color: #c8a882;
     text-decoration: none;
     font-size: 0.85rem;
 }
@@ -528,17 +558,18 @@ body {
 }
 
 .pokladna-sekce {
-    background: #fff;
+    background: #faf7f2;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d4c4a8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     padding: 1.5rem;
 }
 
 .pokladna-sekce h2 {
     font-size: 1.05rem;
-    color: #2c3e50;
+    color: #2a1f14;
     margin-bottom: 1rem;
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid #d4c4a8;
     padding-bottom: 0.5rem;
 }
 
@@ -556,20 +587,21 @@ body {
 .formular-pole label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #555;
+    color: #4a3828;
 }
 
 .formular-pole input {
     padding: 0.5rem 0.75rem;
-    border: 1px solid #bdc3c7;
+    border: 1px solid #c8a882;
     border-radius: 4px;
     font-size: 0.95rem;
+    background: #fff;
 }
 
 .formular-pole input:focus {
     outline: none;
-    border-color: #2c3e50;
-    box-shadow: 0 0 0 2px rgba(44,62,80,0.15);
+    border-color: #2d5a27;
+    box-shadow: 0 0 0 2px rgba(45,90,39,0.15);
 }
 
 .formular-radek {
@@ -579,11 +611,11 @@ body {
 }
 
 .pole-chyba input {
-    border-color: #e74c3c;
+    border-color: #c0392b;
 }
 
 .chyba-text {
-    color: #e74c3c;
+    color: #c0392b;
     font-size: 0.85rem;
 }
 
@@ -593,7 +625,7 @@ body {
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    border: 2px solid #ecf0f1;
+    border: 2px solid #d4c4a8;
     border-radius: 6px;
     margin-bottom: 0.5rem;
     cursor: pointer;
@@ -607,13 +639,13 @@ body {
 
 .moznost-dopravy input,
 .moznost-platby input {
-    accent-color: #2c3e50;
+    accent-color: #2d5a27;
 }
 
 .moznost-dopravy:has(input:checked),
 .moznost-platby:has(input:checked) {
-    border-color: #2c3e50;
-    background: #f0f3f5;
+    border-color: #2d5a27;
+    background: #eef4ec;
 }
 
 .moznost-nazev {
@@ -622,7 +654,7 @@ body {
 }
 
 .moznost-cena {
-    color: #7f8c8d;
+    color: #7a6a57;
     font-size: 0.9rem;
 }
 
@@ -635,9 +667,10 @@ body {
 
 .pokladna-souhrn {
     grid-area: souhrn;
-    background: #fff;
+    background: #faf7f2;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d4c4a8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     padding: 1.5rem;
     position: sticky;
     top: 1rem;
@@ -645,9 +678,9 @@ body {
 
 .pokladna-souhrn h2 {
     font-size: 1.05rem;
-    color: #2c3e50;
+    color: #2a1f14;
     margin-bottom: 1rem;
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid #d4c4a8;
     padding-bottom: 0.5rem;
 }
 
@@ -661,7 +694,7 @@ body {
     justify-content: space-between;
     padding: 0.35rem 0;
     font-size: 0.9rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e8e0d0;
 }
 
 .souhrn-polozka:last-child {
@@ -670,11 +703,11 @@ body {
 }
 
 .souhrn-nazev {
-    color: #555;
+    color: #4a3828;
 }
 
 .souhrn-nazev small {
-    color: #95a5a6;
+    color: #7a6a57;
 }
 
 .souhrn-cena {
@@ -692,7 +725,7 @@ body {
 .potvrzeni-ikona {
     width: 64px;
     height: 64px;
-    background: #27ae60;
+    background: #2d7a2d;
     color: #fff;
     border-radius: 50%;
     font-size: 2rem;
@@ -701,7 +734,7 @@ body {
 }
 
 .potvrzeni-podtitulek {
-    color: #7f8c8d;
+    color: #7a6a57;
     font-size: 1.1rem;
     margin-top: 0.5rem;
 }
@@ -721,18 +754,19 @@ body {
 }
 
 .potvrzeni-sekce {
-    background: #fff;
+    background: #faf7f2;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d4c4a8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     padding: 1.5rem;
 }
 
 .potvrzeni-sekce h2 {
     font-size: 1rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: #2a1f14;
     margin-bottom: 1rem;
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid #d4c4a8;
     padding-bottom: 0.5rem;
 }
 
@@ -746,12 +780,12 @@ body {
 .souhrn-tabulka td {
     padding: 0.5rem 0.75rem;
     text-align: left;
-    border-bottom: 1px solid #ecf0f1;
+    border-bottom: 1px solid #d4c4a8;
 }
 
 .souhrn-tabulka th {
     font-weight: 600;
-    color: #7f8c8d;
+    color: #7a6a57;
     font-size: 0.8rem;
     text-transform: uppercase;
 }
@@ -764,7 +798,7 @@ body {
 }
 
 .platebni-instrukce {
-    border-left: 4px solid #2c3e50;
+    border-left: 4px solid #2d5a27;
 }
 
 .instrukce-tabulka {
@@ -777,7 +811,7 @@ body {
 .instrukce-tabulka th {
     text-align: left;
     padding: 0.35rem 0.5rem 0.35rem 0;
-    color: #7f8c8d;
+    color: #7a6a57;
     font-weight: 500;
     white-space: nowrap;
 }
@@ -788,7 +822,7 @@ body {
 
 .instrukce-poznamka {
     font-size: 0.85rem;
-    color: #7f8c8d;
+    color: #7a6a57;
     margin-top: 0.5rem;
 }
 
@@ -805,7 +839,7 @@ body {
 
 .staticka-stranka h1 {
     font-size: 1.8rem;
-    color: #2c3e50;
+    color: #2a1f14;
     margin-bottom: 2rem;
 }
 
@@ -815,13 +849,13 @@ body {
 
 .stranka-sekce h2 {
     font-size: 1.1rem;
-    color: #2c3e50;
+    color: #2a1f14;
     margin-bottom: 0.6rem;
     font-weight: 600;
 }
 
 .stranka-sekce p {
-    color: #555;
+    color: #4a3828;
     line-height: 1.7;
 }
 
