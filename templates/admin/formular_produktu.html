@@ -1,11 +1,11 @@
 {% extends 'admin/zaklad.html' %}
-{% block titulek %}{{ 'Nový produkt' if not produkt or not produkt.get('id') else 'Upravit produkt' }}{% endblock %}
+{% block titulek %}{{ 'Nový produkt' if not produkt else 'Upravit produkt' }}{% endblock %}
 
 {% block obsah %}
 <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
     <a href="{{ url_for('admin_produkty') }}" class="tlacitko tlacitko-sekundarni">← Zpět</a>
     <h1 class="admin-nadpis" style="margin:0">
-        {{ 'Nový produkt' if not produkt or not produkt.get('id') else 'Upravit produkt' }}
+        {{ 'Nový produkt' if not produkt else 'Upravit produkt' }}
     </h1>
 </div>
 
