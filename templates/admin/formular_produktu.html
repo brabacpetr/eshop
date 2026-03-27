@@ -45,7 +45,7 @@
                 <option value="">— bez kategorie —</option>
                 {% for kat in kategorie %}
                     <option value="{{ kat['id'] }}"
-                        {% if produkt and produkt.get('kategorie_id') == kat['id'] %}selected{% endif %}>
+                        {% if produkt and produkt['kategorie_id'] == kat['id'] %}selected{% endif %}>
                         {{ kat['nazev'] }}
                     </option>
                 {% endfor %}
@@ -55,23 +55,23 @@
         <div class="formular-skupina">
             <label>
                 <input type="checkbox" name="je_doporuceny" value="1"
-                       {% if produkt and produkt.get('je_doporuceny') %}checked{% endif %}>
+                       {% if produkt and produkt['je_doporuceny'] %}checked{% endif %}>
                 Zobrazit na hlavní stránce (doporučený produkt)
             </label>
         </div>
 
         <div class="formular-skupina">
             <label for="obrazek">
-                Obrázek {% if not produkt or not produkt.get('id') %}*{% else %}(nechte prázdné pro zachování stávajícího){% endif %}
+                Obrázek {% if not produkt or not produkt['id'] %}*{% else %}(nechte prázdné pro zachování stávajícího){% endif %}
             </label>
-            {% if produkt and produkt.get('obrazek') %}
+            {% if produkt and produkt['obrazek'] %}
                 <div style="margin-bottom:.5rem">
                     <img src="{{ url_for('static', filename='uploads/' ~ produkt['obrazek']) }}"
                          alt="Aktuální obrázek" style="height:80px;border-radius:4px;object-fit:cover">
                 </div>
             {% endif %}
             <input type="file" id="obrazek" name="obrazek" accept="image/*"
-                   {% if not produkt or not produkt.get('id') %}required{% endif %}>
+                   {% if not produkt or not produkt['id'] %}required{% endif %}>
             {% if chyby.get('obrazek') %}<div class="chyba-pole">{{ chyby['obrazek'] }}</div>{% endif %}
         </div>
 
