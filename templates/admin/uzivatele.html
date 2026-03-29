@@ -1,0 +1,36 @@
+{% extends 'admin/zaklad.html' %}
+
+{% block titulek %}Uživatelé{% endblock %}
+
+{% block obsah %}
+<h1 class="admin-nadpis">Uživatelé</h1>
+
+<div class="admin-karta">
+    <table class="admin-tabulka">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>E-mail</th>
+                <th>Jméno</th>
+                <th>Registrován</th>
+                <th>Objednávek</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in uzivatele %}
+            <tr>
+                <td>{{ u['id'] }}</td>
+                <td>{{ u['email'] }}</td>
+                <td>{{ u['jmeno'] or '—' }}</td>
+                <td>{{ u['registrovan'][:10] }}</td>
+                <td>{{ u['pocet_objednavek'] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align:center; color:#999; padding:2rem;">Zatím žádní registrovaní uživatelé.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

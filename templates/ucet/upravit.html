@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Upravit údaje — ChytniTo{% endblock %}
+
+{% block obsah %}
+<div class="ucet-stranka">
+    <h1>Upravit údaje</h1>
+
+    <form method="POST" class="ucet-formular">
+        <div class="formular-pole {% if chyby.jmeno %}pole-chyba{% endif %}">
+            <label for="jmeno">Jméno a příjmení *</label>
+            <input type="text" id="jmeno" name="jmeno" required
+                   value="{{ request.form.get('jmeno', uzivatel['jmeno'] or '') }}">
+            {% if chyby.jmeno %}<span class="chyba-text">{{ chyby.jmeno }}</span>{% endif %}
+        </div>
+
+        <div class="formular-pole">
+            <label for="telefon">Telefon</label>
+            <input type="tel" id="telefon" name="telefon"
+                   value="{{ request.form.get('telefon', uzivatel['telefon'] or '') }}">
+        </div>
+
+        <section class="pokladna-sekce" style="padding: 1.25rem; margin-top: 0.5rem;">
+            <h2 style="font-size: 1rem;">Doručovací adresa</h2>
+
+            <div class="formular-pole">
+                <label for="ulice">Ulice a číslo popisné</label>
+                <input type="text" id="ulice" name="ulice"
+                       value="{{ request.form.get('ulice', uzivatel['ulice'] or '') }}">
+            </div>
+
+            <div class="formular-radek">
+                <div class="formular-pole">
+                    <label for="mesto">Město</label>
+                    <input type="text" id="mesto" name="mesto"
+                           value="{{ request.form.get('mesto', uzivatel['mesto'] or '') }}">
+                </div>
+                <div class="formular-pole">
+                    <label for="psc">PSČ</label>
+                    <input type="text" id="psc" name="psc" maxlength="6"
+                           value="{{ request.form.get('psc', uzivatel['psc'] or '') }}">
+                </div>
+            </div>
+        </section>
+
+        <button type="submit" class="tlacitko tlacitko-velky">Uložit změny</button>
+    </form>
+
+    <p class="ucet-odkaz"><a href="{{ url_for('ucet_prehled') }}">&larr; Zpět na účet</a></p>
+</div>
+{% endblock %}

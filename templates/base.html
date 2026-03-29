@@ -31,6 +31,15 @@
                     <span class="zarazka">{{ pocet_polozek }}</span>
                 {% endif %}
             </li>
+            <li class="nav-ucet">
+                {% if session.get('uzivatel_id') %}
+                    <a href="/ucet">Můj účet</a>
+                    <a href="/odhlaseni">Odhlásit</a>
+                {% else %}
+                    <a href="/prihlaseni">Přihlásit se</a>
+                    <a href="/registrace">Registrace</a>
+                {% endif %}
+            </li>
         </ul>
     </nav>
 

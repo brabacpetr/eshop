@@ -859,6 +859,134 @@ body {
     line-height: 1.7;
 }
 
+/* ===== Uživatelský účet ===== */
+.ucet-stranka {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.ucet-formular {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 1.5rem;
+}
+
+.ucet-odkaz {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #7a6a57;
+}
+
+.ucet-odkaz a {
+    color: #2d5a27;
+}
+
+.ucet-rozlozeni {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    align-items: start;
+}
+
+.ucet-sekce {
+    background: #faf7f2;
+    border-radius: 8px;
+    border: 1px solid #d4c4a8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+}
+
+.ucet-sekce h2 {
+    font-size: 1.05rem;
+    color: #2a1f14;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #d4c4a8;
+    padding-bottom: 0.5rem;
+}
+
+.ucet-sekce h3 {
+    font-size: 0.9rem;
+    color: #7a6a57;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+}
+
+.ucet-udaje {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 1rem;
+    font-size: 0.95rem;
+}
+
+.ucet-udaje dt {
+    color: #7a6a57;
+    font-weight: 600;
+}
+
+.ucet-udaje dd {
+    color: #2a1f14;
+}
+
+.ucet-adresa {
+    font-size: 0.95rem;
+    color: #4a3828;
+    line-height: 1.5;
+}
+
+.ucet-prazdna {
+    color: #7a6a57;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.ucet-akce {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.ucet-tabulka {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.ucet-tabulka th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    color: #7a6a57;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #d4c4a8;
+}
+
+.ucet-tabulka td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e8e0d0;
+}
+
+.odznak {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.odznak-nova { background: #dbe4ff; color: #3b5bdb; }
+.odznak-zaplacena { background: #d3f9d8; color: #2f9e44; }
+.odznak-odeslana { background: #ffe8cc; color: #e8590c; }
+.odznak-dokoncena { background: #e9ecef; color: #555; }
+.odznak-zrusena { background: #ffe0e0; color: #c92a2a; }
+
+.nav-ucet {
+    margin-left: auto;
+}
+
 /* ===== Zprávy (kontejner) ===== */
 .zpravy {
     max-width: 1100px;

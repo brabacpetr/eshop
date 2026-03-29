@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Přihlášení — ChytniTo{% endblock %}
+
+{% block obsah %}
+<div class="ucet-stranka">
+    <h1>Přihlášení</h1>
+
+    <form method="POST" class="ucet-formular">
+        <div class="formular-pole">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="formular-pole">
+            <label for="heslo">Heslo</label>
+            <input type="password" id="heslo" name="heslo" required>
+        </div>
+
+        <button type="submit" class="tlacitko tlacitko-velky">Přihlásit se</button>
+    </form>
+
+    <p class="ucet-odkaz">Nemáte účet? <a href="{{ url_for('registrace') }}">Zaregistrujte se</a></p>
+</div>
+{% endblock %}

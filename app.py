@@ -15,6 +15,7 @@ from flask import (
 )
 from databaze import inicializovat_db, ziskat_db
 from functools import wraps
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import datetime
 import os
@@ -48,6 +49,19 @@ def admin_required(f):
         return f(*args, **kwargs)
 
     return wrapper
+
+
+def prihlaseni_required(f):
+    """Dekorátor chránící uživatelské route — přesměruje na přihlášení."""
+
+    @wraps(f)
+    def obal(*args, **kwargs):
+        if not session.get("uzivatel_id"):
+            flash("Pro přístup se musíte přihlásit.", "info")
+            return redirect(url_for("prihlaseni", dalsi=request.path))
+        return f(*args, **kwargs)
+
+    return obal
 
 
 @app.route("/")
@@ -371,6 +385,23 @@ def pokladna():
     kupon, sleva = _nacist_kupon(kupon_id, mezisoucet)
 
     if request.method == "GET":
+        # Předvyplnění formuláře z profilu přihlášeného uživatele
+        predvyplneni = {}
+        if session.get("uzivatel_id"):
+            db_uzivatel = ziskat_db()
+            uzivatel = db_uzivatel.execute(
+                "SELECT * FROM uzivatel WHERE id = ?", (session["uzivatel_id"],)
+            ).fetchone()
+            db_uzivatel.close()
+            if uzivatel:
+                predvyplneni = {
+                    "jmeno": uzivatel["jmeno"] or "",
+                    "email": uzivatel["email"],
+                    "telefon": uzivatel["telefon"] or "",
+                    "ulice": uzivatel["ulice"] or "",
+                    "mesto": uzivatel["mesto"] or "",
+                    "psc": uzivatel["psc"] or "",
+                }
         return render_template(
             "pokladna.html",
             polozky=polozky,
@@ -380,7 +411,7 @@ def pokladna():
             cena_dopravy=CENA_DOPRAVY,
             priplatek_dobirka=PRIPLATEK_DOBIRKA,
             chyby={},
-            formular={},
+            formular=predvyplneni,
         )
 
     # POST — zpracování objednávky
@@ -444,8 +475,8 @@ def pokladna():
     kurzor.execute(
         """INSERT INTO objednavka
            (jmeno_zakaznika, email_zakaznika, telefon_zakaznika, ulice, mesto, psc,
-            doprava, platba, stav, kupon_id, mezisoucet, sleva, celkem, vytvoreno)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'nova', ?, ?, ?, ?, ?)""",
+            doprava, platba, stav, kupon_id, mezisoucet, sleva, celkem, vytvoreno, uzivatel_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'nova', ?, ?, ?, ?, ?, ?)""",
         (
             jmeno,
             email,
@@ -460,6 +491,7 @@ def pokladna():
             sleva,
             celkem,
             cas_vytvoreni,
+            session.get("uzivatel_id"),
         ),
     )
     objednavka_id = kurzor.lastrowid
@@ -617,12 +649,197 @@ STATICKE_STRANKY = {
 }
 
 
-@app.route("/stranka/<slug>")
-def staticka_stranka(slug):
-    stranka = STATICKE_STRANKY.get(slug)
+@app.route("/stranka/<nazev>")
+def staticka_stranka(nazev):
+    stranka = STATICKE_STRANKY.get(nazev)
     if stranka is None:
         abort(404)
     return render_template("stranka.html", stranka=stranka)
+
+
+# ─── Uživatelské účty ─────────────────────────────────────────────────────────
+
+
+@app.route("/registrace", methods=["GET", "POST"])
+def registrace():
+    if session.get("uzivatel_id"):
+        return redirect(url_for("ucet_prehled"))
+
+    if request.method == "GET":
+        return render_template("registrace.html", chyby={}, formular={})
+
+    email = request.form.get("email", "").strip().lower()
+    jmeno = request.form.get("jmeno", "").strip()
+    heslo = request.form.get("heslo", "")
+    heslo_znovu = request.form.get("heslo_znovu", "")
+
+    chyby = {}
+    if not email:
+        chyby["email"] = "E-mail je povinný."
+    if not heslo:
+        chyby["heslo"] = "Heslo je povinné."
+    elif len(heslo) < 6:
+        chyby["heslo"] = "Heslo musí mít alespoň 6 znaků."
+    if heslo != heslo_znovu:
+        chyby["heslo_znovu"] = "Hesla se neshodují."
+
+    if not chyby:
+        databaze = ziskat_db()
+        existujici = databaze.execute(
+            "SELECT id FROM uzivatel WHERE email = ?", (email,)
+        ).fetchone()
+        if existujici:
+            chyby["email"] = "Účet s tímto e-mailem již existuje."
+            databaze.close()
+
+    if chyby:
+        return render_template(
+            "registrace.html",
+            chyby=chyby,
+            formular={"email": email, "jmeno": jmeno},
+        )
+
+    # Vložení nového uživatele
+    databaze = ziskat_db()
+    kurzor = databaze.cursor()
+    kurzor.execute(
+        "INSERT INTO uzivatel (email, heslo_hash, jmeno, registrovan) VALUES (?, ?, ?, ?)",
+        (
+            email,
+            generate_password_hash(heslo),
+            jmeno or None,
+            datetime.datetime.now().isoformat(timespec="seconds"),
+        ),
+    )
+    databaze.commit()
+    session["uzivatel_id"] = kurzor.lastrowid
+    databaze.close()
+    flash("Registrace proběhla úspěšně.", "success")
+    return redirect(url_for("ucet_prehled"))
+
+
+@app.route("/prihlaseni", methods=["GET", "POST"])
+def prihlaseni():
+    if session.get("uzivatel_id"):
+        return redirect(url_for("ucet_prehled"))
+
+    if request.method == "GET":
+        return render_template("prihlaseni.html")
+
+    email = request.form.get("email", "").strip().lower()
+    heslo = request.form.get("heslo", "")
+
+    databaze = ziskat_db()
+    uzivatel = databaze.execute(
+        "SELECT * FROM uzivatel WHERE email = ?", (email,)
+    ).fetchone()
+    databaze.close()
+
+    if uzivatel and check_password_hash(uzivatel["heslo_hash"], heslo):
+        session["uzivatel_id"] = uzivatel["id"]
+        flash("Byli jste přihlášeni.", "success")
+        dalsi = request.args.get("dalsi")
+        return redirect(dalsi or url_for("ucet_prehled"))
+
+    flash("Špatný e-mail nebo heslo.", "error")
+    return render_template("prihlaseni.html")
+
+
+@app.route("/odhlaseni")
+def odhlaseni():
+    session.pop("uzivatel_id", None)
+    flash("Byli jste odhlášeni.", "info")
+    return redirect(url_for("index"))
+
+
+@app.route("/ucet")
+@prihlaseni_required
+def ucet_prehled():
+    databaze = ziskat_db()
+    uzivatel = databaze.execute(
+        "SELECT * FROM uzivatel WHERE id = ?", (session["uzivatel_id"],)
+    ).fetchone()
+    objednavky = databaze.execute(
+        "SELECT * FROM objednavka WHERE uzivatel_id = ? ORDER BY vytvoreno DESC",
+        (session["uzivatel_id"],),
+    ).fetchall()
+    databaze.close()
+    return render_template("ucet/prehled.html", uzivatel=uzivatel, objednavky=objednavky)
+
+
+@app.route("/ucet/upravit", methods=["GET", "POST"])
+@prihlaseni_required
+def ucet_upravit():
+    databaze = ziskat_db()
+    uzivatel = databaze.execute(
+        "SELECT * FROM uzivatel WHERE id = ?", (session["uzivatel_id"],)
+    ).fetchone()
+
+    if request.method == "GET":
+        databaze.close()
+        return render_template("ucet/upravit.html", uzivatel=uzivatel, chyby={})
+
+    jmeno = request.form.get("jmeno", "").strip()
+    telefon = request.form.get("telefon", "").strip()
+    ulice = request.form.get("ulice", "").strip()
+    mesto = request.form.get("mesto", "").strip()
+    psc = request.form.get("psc", "").strip()
+
+    chyby = {}
+    if not jmeno:
+        chyby["jmeno"] = "Jméno je povinné."
+
+    if chyby:
+        databaze.close()
+        return render_template("ucet/upravit.html", uzivatel=uzivatel, chyby=chyby)
+
+    databaze.execute(
+        "UPDATE uzivatel SET jmeno=?, telefon=?, ulice=?, mesto=?, psc=? WHERE id=?",
+        (jmeno or None, telefon or None, ulice or None, mesto or None, psc or None, session["uzivatel_id"]),
+    )
+    databaze.commit()
+    databaze.close()
+    flash("Údaje byly uloženy.", "success")
+    return redirect(url_for("ucet_prehled"))
+
+
+@app.route("/ucet/heslo", methods=["GET", "POST"])
+@prihlaseni_required
+def ucet_heslo():
+    if request.method == "GET":
+        return render_template("ucet/heslo.html", chyby={})
+
+    heslo_soucasne = request.form.get("heslo_soucasne", "")
+    heslo_nove = request.form.get("heslo_nove", "")
+    heslo_nove_znovu = request.form.get("heslo_nove_znovu", "")
+
+    databaze = ziskat_db()
+    uzivatel = databaze.execute(
+        "SELECT * FROM uzivatel WHERE id = ?", (session["uzivatel_id"],)
+    ).fetchone()
+
+    chyby = {}
+    if not check_password_hash(uzivatel["heslo_hash"], heslo_soucasne):
+        chyby["heslo_soucasne"] = "Současné heslo je nesprávné."
+    if not heslo_nove:
+        chyby["heslo_nove"] = "Nové heslo je povinné."
+    elif len(heslo_nove) < 6:
+        chyby["heslo_nove"] = "Heslo musí mít alespoň 6 znaků."
+    if heslo_nove != heslo_nove_znovu:
+        chyby["heslo_nove_znovu"] = "Hesla se neshodují."
+
+    if chyby:
+        databaze.close()
+        return render_template("ucet/heslo.html", chyby=chyby)
+
+    databaze.execute(
+        "UPDATE uzivatel SET heslo_hash=? WHERE id=?",
+        (generate_password_hash(heslo_nove), session["uzivatel_id"]),
+    )
+    databaze.commit()
+    databaze.close()
+    flash("Heslo bylo změněno.", "success")
+    return redirect(url_for("ucet_prehled"))
 
 
 # ─── Admin: přihlášení ────────────────────────────────────────────────────────
@@ -1087,6 +1304,23 @@ def admin_smazat_kupon(kupon_id):
         flash("Kupon byl smazán.", "success")
     databaze.close()
     return redirect(url_for("admin_kupony"))
+
+
+# ─── Admin: uživatelé ─────────────────────────────────────────────────────────
+
+
+@app.route("/admin/uzivatele")
+@admin_required
+def admin_uzivatele():
+    databaze = ziskat_db()
+    uzivatele = databaze.execute(
+        "SELECT u.*, COUNT(o.id) as pocet_objednavek "
+        "FROM uzivatel u "
+        "LEFT JOIN objednavka o ON o.uzivatel_id = u.id "
+        "GROUP BY u.id ORDER BY u.registrovan DESC"
+    ).fetchall()
+    databaze.close()
+    return render_template("admin/uzivatele.html", uzivatele=uzivatele)
 
 
 if __name__ == "__main__":

@@ -87,6 +87,27 @@ def inicializovat_db():
         )
     ''')
 
+    # Tabulka uživatelů
+    kurzor.execute('''
+        CREATE TABLE IF NOT EXISTS uzivatel (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE,
+            heslo_hash TEXT NOT NULL,
+            jmeno TEXT,
+            telefon TEXT,
+            ulice TEXT,
+            mesto TEXT,
+            psc TEXT,
+            registrovan TEXT NOT NULL
+        )
+    ''')
+
+    # Migrace: přidání uzivatel_id do objednavka (pro existující databáze)
+    try:
+        kurzor.execute('ALTER TABLE objednavka ADD COLUMN uzivatel_id INTEGER REFERENCES uzivatel(id)')
+    except Exception:
+        pass  # Sloupec již existuje
+
     pripojeni.commit()
     pripojeni.close()
 

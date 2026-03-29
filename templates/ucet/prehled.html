@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Můj účet — ChytniTo{% endblock %}
+
+{% block obsah %}
+<h1>Můj účet</h1>
+
+<div class="ucet-rozlozeni">
+    <section class="ucet-sekce">
+        <h2>Osobní údaje</h2>
+        <dl class="ucet-udaje">
+            <dt>E-mail</dt>
+            <dd>{{ uzivatel['email'] }}</dd>
+            <dt>Jméno</dt>
+            <dd>{{ uzivatel['jmeno'] or '—' }}</dd>
+            <dt>Telefon</dt>
+            <dd>{{ uzivatel['telefon'] or '—' }}</dd>
+        </dl>
+
+        {% if uzivatel['ulice'] %}
+        <h3>Doručovací adresa</h3>
+        <p class="ucet-adresa">
+            {{ uzivatel['ulice'] }}<br>
+            {{ uzivatel['mesto'] }} {{ uzivatel['psc'] }}
+        </p>
+        {% else %}
+        <p class="ucet-adresa ucet-prazdna">Adresa zatím není vyplněna.</p>
+        {% endif %}
+
+        <div class="ucet-akce">
+            <a href="{{ url_for('ucet_upravit') }}" class="tlacitko">Upravit údaje</a>
+            <a href="{{ url_for('ucet_heslo') }}" class="tlacitko tlacitko-outline">Změnit heslo</a>
+        </div>
+    </section>
+
+    <section class="ucet-sekce">
+        <h2>Moje objednávky</h2>
+        {% if objednavky %}
+        <table class="ucet-tabulka">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Datum</th>
+                    <th>Celkem</th>
+                    <th>Stav</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in objednavky %}
+                <tr>
+                    <td>{{ obj['id'] }}</td>
+                    <td>{{ obj['vytvoreno'][:10] }}</td>
+                    <td>{{ "%.2f"|format(obj['celkem']) }} Kč</td>
+                    <td><span class="odznak odznak-{{ obj['stav'] }}">{{ obj['stav'] }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="ucet-prazdna">Zatím nemáte žádné objednávky.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

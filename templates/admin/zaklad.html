@@ -54,6 +54,7 @@
             <a href="{{ url_for('admin_kategorie') }}" {% if request.endpoint == 'admin_kategorie' %}class="aktivni"{% endif %}>Kategorie</a>
             <a href="{{ url_for('admin_objednavky') }}" {% if request.endpoint in ('admin_objednavky','admin_detail_objednavky') %}class="aktivni"{% endif %}>Objednávky</a>
             <a href="{{ url_for('admin_kupony') }}" {% if request.endpoint == 'admin_kupony' %}class="aktivni"{% endif %}>Kupony</a>
+            <a href="{{ url_for('admin_uzivatele') }}" {% if request.endpoint == 'admin_uzivatele' %}class="aktivni"{% endif %}>Uživatelé</a>
             <div class="oddelovac"></div>
             <a href="{{ url_for('index') }}">← E-shop</a>
             <a href="{{ url_for('admin_odhlaseni') }}">Odhlásit</a>

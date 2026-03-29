@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Změna hesla — ChytniTo{% endblock %}
+
+{% block obsah %}
+<div class="ucet-stranka">
+    <h1>Změna hesla</h1>
+
+    <form method="POST" class="ucet-formular">
+        <div class="formular-pole {% if chyby.heslo_soucasne %}pole-chyba{% endif %}">
+            <label for="heslo_soucasne">Současné heslo *</label>
+            <input type="password" id="heslo_soucasne" name="heslo_soucasne" required>
+            {% if chyby.heslo_soucasne %}<span class="chyba-text">{{ chyby.heslo_soucasne }}</span>{% endif %}
+        </div>
+
+        <div class="formular-pole {% if chyby.heslo_nove %}pole-chyba{% endif %}">
+            <label for="heslo_nove">Nové heslo * <small>(min. 6 znaků)</small></label>
+            <input type="password" id="heslo_nove" name="heslo_nove" required minlength="6">
+            {% if chyby.heslo_nove %}<span class="chyba-text">{{ chyby.heslo_nove }}</span>{% endif %}
+        </div>
+
+        <div class="formular-pole {% if chyby.heslo_nove_znovu %}pole-chyba{% endif %}">
+            <label for="heslo_nove_znovu">Nové heslo znovu *</label>
+            <input type="password" id="heslo_nove_znovu" name="heslo_nove_znovu" required>
+            {% if chyby.heslo_nove_znovu %}<span class="chyba-text">{{ chyby.heslo_nove_znovu }}</span>{% endif %}
+        </div>
+
+        <button type="submit" class="tlacitko tlacitko-velky">Změnit heslo</button>
+    </form>
+
+    <p class="ucet-odkaz"><a href="{{ url_for('ucet_prehled') }}">&larr; Zpět na účet</a></p>
+</div>
+{% endblock %}

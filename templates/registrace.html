@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block titulek %}Registrace — ChytniTo{% endblock %}
+
+{% block obsah %}
+<div class="ucet-stranka">
+    <h1>Registrace</h1>
+
+    <form method="POST" class="ucet-formular">
+        <div class="formular-pole {% if chyby.email %}pole-chyba{% endif %}">
+            <label for="email">E-mail *</label>
+            <input type="email" id="email" name="email" required
+                   value="{{ formular.email or '' }}">
+            {% if chyby.email %}<span class="chyba-text">{{ chyby.email }}</span>{% endif %}
+        </div>
+
+        <div class="formular-pole">
+            <label for="jmeno">Jméno a příjmení</label>
+            <input type="text" id="jmeno" name="jmeno"
+                   value="{{ formular.jmeno or '' }}">
+        </div>
+
+        <div class="formular-pole {% if chyby.heslo %}pole-chyba{% endif %}">
+            <label for="heslo">Heslo * <small>(min. 6 znaků)</small></label>
+            <input type="password" id="heslo" name="heslo" required minlength="6">
+            {% if chyby.heslo %}<span class="chyba-text">{{ chyby.heslo }}</span>{% endif %}
+        </div>
+
+        <div class="formular-pole {% if chyby.heslo_znovu %}pole-chyba{% endif %}">
+            <label for="heslo_znovu">Heslo znovu *</label>
+            <input type="password" id="heslo_znovu" name="heslo_znovu" required>
+            {% if chyby.heslo_znovu %}<span class="chyba-text">{{ chyby.heslo_znovu }}</span>{% endif %}
+        </div>
+
+        <button type="submit" class="tlacitko tlacitko-velky">Zaregistrovat se</button>
+    </form>
+
+    <p class="ucet-odkaz">Již máte účet? <a href="{{ url_for('prihlaseni') }}">Přihlaste se</a></p>
+</div>
+{% endblock %}
